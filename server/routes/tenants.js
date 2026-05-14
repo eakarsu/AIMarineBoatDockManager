@@ -5,8 +5,13 @@ const pool = require('../db');
 // GET /api/tenants
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM tenants ORDER BY last_name, first_name');
-    res.json(result.rows);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+    const result = await pool.query('SELECT * FROM tenants ORDER BY last_name, first_name LIMIT $1 OFFSET $2', [limit, offset]);
+    const countResult = await pool.query('SELECT COUNT(*) FROM tenants');
+    const total = parseInt(countResult.rows[0].count);
+    res.json({ data: result.rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) {
     console.error('Error fetching tenants:', err);
     res.status(500).json({ error: 'Server error' });

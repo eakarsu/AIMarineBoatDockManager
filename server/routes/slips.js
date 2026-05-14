@@ -5,8 +5,13 @@ const pool = require('../db');
 // GET /api/slips
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM slips ORDER BY dock, slip_number');
-    res.json(result.rows);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+    const result = await pool.query('SELECT * FROM slips ORDER BY dock, slip_number LIMIT $1 OFFSET $2', [limit, offset]);
+    const countResult = await pool.query('SELECT COUNT(*) FROM slips');
+    const total = parseInt(countResult.rows[0].count);
+    res.json({ data: result.rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) {
     console.error('Error fetching slips:', err);
     res.status(500).json({ error: 'Server error' });
