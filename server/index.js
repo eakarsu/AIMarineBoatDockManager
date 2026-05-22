@@ -78,6 +78,7 @@ app.use('/api/financial', authenticateToken, financialRoutes);
 app.use('/api/seasonal-rates', authenticateToken, seasonalRatesRoutes);
 app.use('/api/insurance', authenticateToken, insuranceRoutes);
 app.use('/api/ai', authenticateToken, aiRoutes);
+app.use('/api/storm-surge-slip-risk', authenticateToken, require('./routes/stormSurgeSlipRisk'));
 
 // GET /api/compliance-calendar — aggregated upcoming deadlines
 app.get('/api/compliance-calendar', authenticateToken, async (req, res) => {
