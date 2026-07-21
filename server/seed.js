@@ -4,46 +4,34 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-const DB_NAME = 'marina_db';
-
-// Connection string without database name (connects to default 'postgres' db)
-const baseConnectionString = process.env.DATABASE_URL.replace(/\/marina_db/, '/postgres');
+function requireDisposableDatabase() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is required');
+  }
+  const url = new URL(process.env.DATABASE_URL);
+  const database = decodeURIComponent(url.pathname.replace(/^\//, ''));
+  const allowedHosts = new Set(['127.0.0.1', 'localhost', '::1']);
+  if (process.env.ALLOW_DISPOSABLE_SEED !== 'YES') {
+    throw new Error('Refusing to reset data without ALLOW_DISPOSABLE_SEED=YES');
+  }
+  if (process.env.DISPOSABLE_DATABASE_CONFIRMATION !== database) {
+    throw new Error('DISPOSABLE_DATABASE_CONFIRMATION must exactly match the target database');
+  }
+  if (!allowedHosts.has(url.hostname) && process.env.ALLOW_REMOTE_DISPOSABLE_SEED !== 'true') {
+    throw new Error('Refusing to reset a non-local database');
+  }
+  return database;
+}
 
 async function seed() {
+  const database = requireDisposableDatabase();
   console.log('Starting database seed process...');
-
-  // Step 1: Connect to default postgres database and recreate marina_db
-  const adminClient = new Client({ connectionString: baseConnectionString });
-  try {
-    await adminClient.connect();
-    console.log('Connected to PostgreSQL server.');
-
-    // Terminate existing connections to marina_db
-    await adminClient.query(`
-      SELECT pg_terminate_backend(pg_stat_activity.pid)
-      FROM pg_stat_activity
-      WHERE pg_stat_activity.datname = '${DB_NAME}'
-      AND pid <> pg_backend_pid();
-    `);
-
-    // Drop and recreate database
-    await adminClient.query(`DROP DATABASE IF EXISTS ${DB_NAME};`);
-    console.log(`Dropped database ${DB_NAME} (if existed).`);
-
-    await adminClient.query(`CREATE DATABASE ${DB_NAME};`);
-    console.log(`Created database ${DB_NAME}.`);
-  } catch (err) {
-    console.error('Error setting up database:', err.message);
-    process.exit(1);
-  } finally {
-    await adminClient.end();
-  }
-
-  // Step 2: Connect to marina_db and run schema + seed
   const marinaClient = new Client({ connectionString: process.env.DATABASE_URL });
   try {
     await marinaClient.connect();
-    console.log(`Connected to ${DB_NAME}.`);
+    console.log(`Connected to acknowledged disposable database ${database}.`);
+
+    await marinaClient.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
 
     // Run schema.sql
     const schemaSql = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
@@ -51,33 +39,36 @@ async function seed() {
     console.log('Schema created successfully.');
 
     // Insert user with hashed password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('password123', salt);
+    const adminEmail = process.env.SEED_ADMIN_EMAIL || process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.SEED_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+    const adminName = process.env.BOOTSTRAP_ADMIN_NAME || 'Marina Admin';
+    if (!adminEmail || !adminPassword) {
+      throw new Error('SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required');
+    }
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(adminPassword, salt);
 
     await marinaClient.query(`
       INSERT INTO users (email, password, name, role) VALUES
       ($1, $2, $3, $4)
-    `, ['admin@marina.com', hashedPassword, 'Marina Admin', 'admin']);
-    console.log('Admin user created (admin@marina.com / password123).');
+    `, [adminEmail, hashedPassword, adminName, 'admin']);
+    console.log(`Admin user created for ${adminEmail}.`);
 
     // Run seed.sql
     const seedSql = fs.readFileSync(path.join(__dirname, 'seed.sql'), 'utf8');
     await marinaClient.query(seedSql);
     console.log('Seed data inserted successfully.');
 
-    console.log('\nDatabase seeding complete!');
-    console.log('----------------------------');
-    console.log('Login credentials:');
-    console.log('  Email: admin@marina.com');
-    console.log('  Password: password123');
-    console.log('----------------------------');
+    console.log('\nDatabase seeding complete.');
 
   } catch (err) {
-    console.error('Error seeding database:', err.message);
-    process.exit(1);
+    throw err;
   } finally {
     await marinaClient.end();
   }
 }
 
-seed();
+seed().catch((err) => {
+  console.error('Seed refused or failed:', err.message);
+  process.exit(1);
+});
