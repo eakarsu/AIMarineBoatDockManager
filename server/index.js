@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const bcrypt = require('bcryptjs');
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 
 const app = express();
@@ -15,17 +16,37 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Create ai_results table on startup
-db.query(`
-  CREATE TABLE IF NOT EXISTS ai_results (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER,
-    endpoint VARCHAR(100),
-    input_data JSONB,
-    result TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
-  )
-`).catch(e => console.error('Failed to create ai_results table:', e.message));
+async function initializeRuntime() {
+  if (process.env.MIGRATE_ON_START !== 'true') return;
+  const email = process.env.PROVISION_ADMIN_EMAIL || process.env.ADMIN_EMAIL;
+  const password = process.env.PROVISION_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  if (!email || !password) throw new Error('Runtime admin credentials are required');
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      role VARCHAR(50) DEFAULT 'manager',
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS ai_results (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER,
+      endpoint VARCHAR(100),
+      input_data JSONB,
+      result TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+  const passwordHash = await bcrypt.hash(password, 10);
+  await db.query(
+    `INSERT INTO users (email, password, name, role)
+     VALUES ($1, $2, $3, 'manager')
+     ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password, name = EXCLUDED.name, role = EXCLUDED.role`,
+    [email, passwordHash, process.env.PROVISION_ADMIN_NAME || 'Runtime Administrator']
+  );
+}
 
 // Route imports
 const authRoutes = require('./routes/auth');
@@ -177,9 +198,12 @@ app.get('/api/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Marina Manager API server running on port ${PORT}`);
-});
+initializeRuntime()
+  .then(() => app.listen(PORT, () => console.log(`Marina Manager API server running on port ${PORT}`)))
+  .catch((error) => {
+    console.error('Runtime initialization failed:', error.message);
+    process.exit(1);
+  });
 
 module.exports = app;
 
