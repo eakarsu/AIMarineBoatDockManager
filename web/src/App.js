@@ -1,3 +1,5 @@
+import NativeWorkflowStudio from './NativeWorkflowStudio';
+import nativeWorkflowConfig from './nativeWorkflowConfig.json';
 import WorkflowSidebar from './WorkflowSidebar';
 import { useEffect, useState } from 'react';
 import './App.css';
@@ -12,6 +14,8 @@ async function api(path, options = {}) {
   if (!response.ok) throw new Error(body.error || `Request failed with HTTP ${response.status}`);
   return body;
 }
+
+function authenticatedNativeRequest(path, options = {}) { return api(path, { ...options, headers: { ...(options.headers || {}), Authorization: `Bearer ${localStorage.getItem('authToken') || ''}` } }); }
 
 export default function App() {
   const [email, setEmail] = useState('');
@@ -28,9 +32,7 @@ export default function App() {
 
   const fillDemoCredentials = async () => {
     setError(''); setBusy(true);
-    try { const credentials = await api('/api/auth/demo-credentials'); setEmail(credentials.email); setPassword(credentials.password)
-
-}
+    try { const credentials = await api('/api/auth/demo-credentials'); setEmail(credentials.email); setPassword(credentials.password); }
     catch (requestError) { setError(requestError.message); }
     finally { setBusy(false); }
   };
@@ -51,9 +53,9 @@ export default function App() {
     {error && <p className="form-error" role="alert">{error}</p>}
     <label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="username" /></label>
     <label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" /></label>
-    <button className="demo-button" type="button" onClick={fillDemoCredentials} disabled={busy}>Auto Fill Demo Credentials</button>
+    <button className="demo-button" type="button" onClick={fillDemoCredentials} disabled={busy}>Fill Demo Credentials</button>
     <button className="primary-button" type="submit" disabled={busy}>{busy ? 'Please wait…' : 'Sign In'}</button>
   </form></main>;
 
-  return <div className="codex-nav-shell"><WorkflowSidebar title="MarineBoatDockManager" features={FEATURES} /><main className="shell"><section className="hero" id="overview"><div className="account-row"><p className="eyebrow">Authenticated workspace</p><button type="button" onClick={() => { localStorage.removeItem('authToken'); setUser(null); }}>Sign out</button></div><h1>AI Marina &amp; Boat Dock Manager</h1><p className="lede">Welcome, {user.name || user.email}. Your authenticated marina workflow is ready.</p><div className="service service--ready" role="status"><span>Connected</span><p>Backend API and session identity are verified.</p></div></section><section aria-labelledby="workflow-heading"><h2 id="workflow-heading">Primary workflow</h2><div className="workflow">{FEATURES.map((feature, index) => <article key={feature} id={`step-${index + 1}`}><strong>{String(index + 1).padStart(2, '0')}</strong><h3>{feature}</h3><p>Continue this authenticated workflow with auditable saved results.</p></article>)}</div></section></main></div>;
+  return <div className="codex-nav-shell"><WorkflowSidebar title="MarineBoatDockManager" features={FEATURES} /><main className="shell"><section className="hero" id="overview"><div className="account-row"><p className="eyebrow">Authenticated workspace</p><button type="button" onClick={() => { localStorage.removeItem('authToken'); setUser(null); }}>Sign out</button></div><h1>AI Marina &amp; Boat Dock Manager</h1><p className="lede">Welcome, {user.name || user.email}. Your authenticated marina workflow is ready.</p><div className="service service--ready" role="status"><span>Connected</span><p>Backend API and session identity are verified.</p></div></section><section aria-labelledby="workflow-heading"><h2 id="workflow-heading">Primary workflow</h2><div className="workflow">{FEATURES.map((feature, index) => <article key={feature} id={`step-${index + 1}`}><strong>{String(index + 1).padStart(2, '0')}</strong><h3>{feature}</h3><p>Continue this authenticated workflow with auditable saved results.</p></article>)}</div></section><NativeWorkflowStudio config={nativeWorkflowConfig} request={authenticatedNativeRequest} /></main></div>;
 }

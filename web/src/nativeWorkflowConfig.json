@@ -1,0 +1,582 @@
+{
+  "title": "Marine Boat Dock Manager",
+  "features": [
+    {
+      "id": "ai-slip-pricing",
+      "endpoint": "/api/ai/slip-pricing",
+      "title": "Slip pricing",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "seasonalRates",
+          "type": "text",
+          "required": false,
+          "label": "Seasonal Rates",
+          "presets": [
+            "Illustrative: transient $95/night; seasonal $4,200; verify against current rate sheet.",
+            "Illustrative: transient $120/night; seasonal $4,800; verify against current rate sheet.",
+            "Illustrative: transient $145/night; seasonal $5,400; verify against current rate sheet."
+          ],
+          "manual": false
+        },
+        {
+          "key": "occupancyRate",
+          "type": "text",
+          "required": false,
+          "label": "Occupancy Rate",
+          "presets": [
+            "Illustrative occupancy: 68%",
+            "Illustrative occupancy: 82%",
+            "Illustrative occupancy: 94%"
+          ],
+          "manual": false
+        },
+        {
+          "key": "season",
+          "type": "text",
+          "required": false,
+          "label": "Season",
+          "presets": [
+            "Early spring shoulder season",
+            "Peak summer season",
+            "Late autumn shoulder season"
+          ],
+          "manual": false
+        },
+        {
+          "key": "marketData",
+          "type": "text",
+          "required": false,
+          "label": "Market Data",
+          "presets": [
+            "Illustrative comparison: nearby marinas $85\u2013$110/night; verify current listings.",
+            "Illustrative comparison: nearby marinas $105\u2013$135/night; verify current listings.",
+            "Illustrative comparison: nearby marinas $125\u2013$160/night; verify current listings."
+          ],
+          "manual": false
+        },
+        {
+          "key": "slips",
+          "type": "text",
+          "required": false,
+          "label": "Slips",
+          "presets": [
+            "Illustrative mix: 20 slips at 25\u201335 ft; actual inventory is loaded by the service.",
+            "Illustrative mix: 28 slips at 30\u201345 ft; actual inventory is loaded by the service.",
+            "Illustrative mix: 34 slips at 35\u201355 ft; actual inventory is loaded by the service."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 78
+      }
+    },
+    {
+      "id": "ai-weather-advisory",
+      "endpoint": "/api/ai/weather-advisory",
+      "title": "Weather advisory",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "weatherData",
+          "type": "text",
+          "required": false,
+          "label": "Weather Data",
+          "presets": [
+            "Illustrative forecast: 12 kt southwest wind, 1 ft chop; confirm live forecast.",
+            "Illustrative forecast: 20 kt northeast wind, 3 ft chop; confirm live forecast.",
+            "Illustrative forecast: 30 kt gusts, thunderstorms possible; confirm live forecast."
+          ],
+          "manual": false
+        },
+        {
+          "key": "vessels",
+          "type": "text",
+          "required": false,
+          "label": "Vessels",
+          "presets": [
+            "Illustrative context: small day boats on exposed slips; confirm actual vessel roster.",
+            "Illustrative context: mixed sail and power vessels; confirm actual vessel roster.",
+            "Illustrative context: larger vessels and transient arrivals; confirm actual vessel roster."
+          ],
+          "manual": false
+        },
+        {
+          "key": "currentConditions",
+          "type": "text",
+          "required": false,
+          "label": "Current Conditions",
+          "presets": [
+            "Illustrative: clear visibility and calm approach channel; verify observations.",
+            "Illustrative: moderate crosswind at outer dock; verify observations.",
+            "Illustrative: reduced visibility and rising swell; verify observations."
+          ],
+          "manual": false
+        },
+        {
+          "key": "forecast",
+          "type": "text",
+          "required": false,
+          "label": "Forecast",
+          "presets": [
+            "Illustrative: fair conditions through evening; verify official forecast.",
+            "Illustrative: stronger afternoon wind and showers; verify official forecast.",
+            "Illustrative: thunderstorms overnight and possible gusts; verify official forecast."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 126
+      }
+    },
+    {
+      "id": "ai-maintenance-prediction",
+      "endpoint": "/api/ai/maintenance-prediction",
+      "title": "Maintenance prediction",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "infrastructure",
+          "type": "text",
+          "required": false,
+          "label": "Infrastructure",
+          "presets": [
+            "Illustrative: timber finger piers and shore power pedestals.",
+            "Illustrative: floating docks, gangways, and potable water lines.",
+            "Illustrative: seawall, fixed docks, and pump-out equipment."
+          ],
+          "manual": false
+        },
+        {
+          "key": "age",
+          "type": "number",
+          "required": false,
+          "label": "Age",
+          "presets": [
+            8,
+            15,
+            25
+          ],
+          "manual": false
+        },
+        {
+          "key": "lastInspections",
+          "type": "text",
+          "required": false,
+          "label": "Last Inspections",
+          "presets": [
+            "Illustrative: visual inspection six months ago; no defects recorded.",
+            "Illustrative: quarterly inspection noted loose cleats on two slips.",
+            "Illustrative: annual inspection noted corrosion at three pedestals."
+          ],
+          "manual": false
+        },
+        {
+          "key": "environmentalFactors",
+          "type": "text",
+          "required": false,
+          "label": "Environmental Factors",
+          "presets": [
+            "Illustrative: routine salt spray and seasonal storms.",
+            "Illustrative: frequent tidal flooding and UV exposure.",
+            "Illustrative: storm surge exposure and high vessel traffic."
+          ],
+          "manual": false
+        },
+        {
+          "key": "workOrders",
+          "type": "text",
+          "required": false,
+          "label": "Work Orders",
+          "presets": [
+            "Illustrative: two closed cleat repairs; compare with actual stored orders.",
+            "Illustrative: recurring gangway hinge repairs; compare with actual stored orders.",
+            "Illustrative: pedestal breaker replacements; compare with actual stored orders."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 159
+      }
+    },
+    {
+      "id": "ai-waitlist-priority",
+      "endpoint": "/api/ai/waitlist-priority",
+      "title": "Waitlist priority",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "availableSlips",
+          "type": "text",
+          "required": false,
+          "label": "Available Slips",
+          "presets": [
+            "Illustrative: one 30 ft slip with 4 ft draft; verify inventory.",
+            "Illustrative: two 40 ft slips with 5 ft draft; verify inventory.",
+            "Illustrative: one 50 ft slip with 6 ft draft; verify inventory."
+          ],
+          "manual": false
+        },
+        {
+          "key": "currentTenants",
+          "type": "text",
+          "required": false,
+          "label": "Current Tenants",
+          "presets": [
+            "Illustrative: prioritize documented renewal commitments; verify tenant records.",
+            "Illustrative: consider existing tenant transfers; verify tenant records.",
+            "Illustrative: review expiring agreements first; verify tenant records."
+          ],
+          "manual": false
+        },
+        {
+          "key": "criteria",
+          "type": "text",
+          "required": false,
+          "label": "Criteria",
+          "presets": [
+            "Prioritize vessel fit, application date, and safety requirements.",
+            "Balance vessel fit, tenure, accessibility, and application date.",
+            "Review vessel fit, utility needs, payment status, and documented exceptions."
+          ],
+          "manual": false
+        },
+        {
+          "key": "waitingList",
+          "type": "text",
+          "required": false,
+          "label": "Waiting List",
+          "presets": [
+            "Illustrative: three applicants awaiting 25\u201335 ft berths; actual list is loaded by the service.",
+            "Illustrative: five applicants awaiting 35\u201345 ft berths; actual list is loaded by the service.",
+            "Illustrative: seven applicants with mixed berth needs; actual list is loaded by the service."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 201
+      }
+    },
+    {
+      "id": "ai-insurance-analysis",
+      "endpoint": "/api/ai/insurance-analysis",
+      "title": "Insurance analysis",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "insuranceRecords",
+          "type": "text",
+          "required": false,
+          "label": "Insurance Records",
+          "presets": [
+            "Illustrative: review liability limits and expiration dates; actual records are loaded by the service.",
+            "Illustrative: review missing endorsements and renewals; actual records are loaded by the service.",
+            "Illustrative: review coverage gaps and policy exclusions; actual records are loaded by the service."
+          ],
+          "manual": false
+        },
+        {
+          "key": "boats",
+          "type": "text",
+          "required": false,
+          "label": "Boats",
+          "presets": [
+            "Illustrative: small powerboat fleet; verify vessel registry.",
+            "Illustrative: mixed sail and power fleet; verify vessel registry.",
+            "Illustrative: transient and long-term fleet; verify vessel registry."
+          ],
+          "manual": false
+        },
+        {
+          "key": "tenants",
+          "type": "text",
+          "required": false,
+          "label": "Tenants",
+          "presets": [
+            "Illustrative: annual berth holders; verify tenant records.",
+            "Illustrative: seasonal and annual tenants; verify tenant records.",
+            "Illustrative: tenants with renewal dates approaching; verify tenant records."
+          ],
+          "manual": false
+        },
+        {
+          "key": "marinaRequirements",
+          "type": "text",
+          "required": false,
+          "label": "Marina Requirements",
+          "presets": [
+            "Verify current liability coverage and vessel identification.",
+            "Verify liability coverage, marina additional insured language, and renewal dates.",
+            "Review coverage limits, exclusions, endorsements, and expiration controls."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 242
+      }
+    },
+    {
+      "id": "ai-occupancy-optimizer",
+      "endpoint": "/api/ai/occupancy-optimizer",
+      "title": "Occupancy optimizer",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "season",
+          "type": "text",
+          "required": false,
+          "label": "Season",
+          "presets": [
+            "Spring shoulder season",
+            "Peak summer season",
+            "Autumn shoulder season"
+          ],
+          "manual": false
+        },
+        {
+          "key": "vesselMix",
+          "type": "text",
+          "required": false,
+          "label": "Vessel Mix",
+          "presets": [
+            "Illustrative: 60% power, 40% sail; compare with actual inventory.",
+            "Illustrative: 50% power, 50% sail; compare with actual inventory.",
+            "Illustrative: 70% power, 30% sail; compare with actual inventory."
+          ],
+          "manual": false
+        },
+        {
+          "key": "targetOccupancy",
+          "type": "text",
+          "required": false,
+          "label": "Target Occupancy",
+          "presets": [
+            "Target 75% occupancy while retaining transient capacity.",
+            "Target 85% occupancy while retaining launch flexibility.",
+            "Target 92% occupancy subject to safety and service capacity."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 275
+      }
+    },
+    {
+      "id": "ai-tenant-churn-predictor",
+      "endpoint": "/api/ai/tenant-churn-predictor",
+      "title": "Tenant churn predictor",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "lookbackMonths",
+          "default": 12,
+          "type": "number",
+          "required": false,
+          "label": "Lookback Months",
+          "presets": [
+            12,
+            15,
+            18
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 317
+      }
+    },
+    {
+      "id": "ai-maintenance-cost-forecaster",
+      "endpoint": "/api/ai/maintenance-cost-forecaster",
+      "title": "Maintenance cost forecaster",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "horizonMonths",
+          "default": 12,
+          "type": "number",
+          "required": false,
+          "label": "Horizon Months",
+          "presets": [
+            12,
+            15,
+            18
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 349
+      }
+    },
+    {
+      "id": "ai-emergency-preparedness-plan",
+      "endpoint": "/api/ai/emergency-preparedness-plan",
+      "title": "Emergency preparedness plan",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "scenario",
+          "default": "hurricane",
+          "type": "text",
+          "required": false,
+          "label": "Scenario",
+          "presets": [
+            "Hurricane watch with 72 hours lead time",
+            "Severe thunderstorm with 24 hours lead time",
+            "Coastal flood warning with 48 hours lead time"
+          ],
+          "manual": false
+        },
+        {
+          "key": "leadTimeHours",
+          "default": 72,
+          "type": "number",
+          "required": false,
+          "label": "Lead Time Hours",
+          "presets": [
+            72,
+            90,
+            108
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 386
+      }
+    },
+    {
+      "id": "ai-weather-impact-forecast",
+      "endpoint": "/api/ai/weather-impact-forecast",
+      "title": "Weather impact forecast",
+      "description": "Review native inputs and source evidence before generating. Examples are illustrative and require your review.",
+      "fields": [
+        {
+          "key": "horizonDays",
+          "default": 14,
+          "type": "number",
+          "required": false,
+          "label": "Horizon Days",
+          "presets": [
+            14,
+            18,
+            21
+          ],
+          "manual": false
+        },
+        {
+          "key": "currentConditions",
+          "type": "text",
+          "required": false,
+          "label": "Current Conditions",
+          "presets": [
+            "Illustrative: light wind, fair visibility, normal tide; verify live observations.",
+            "Illustrative: moderate onshore wind and rising tide; verify live observations.",
+            "Illustrative: strong gusts and heavy rain; verify live observations."
+          ],
+          "manual": false
+        }
+      ],
+      "source": {
+        "file": "server/routes/ai.js",
+        "line": 439
+      }
+    }
+  ],
+  "resources": [
+    {
+      "key": "slips",
+      "endpoint": "/api/slips",
+      "label": "Slips",
+      "fields": [
+        "slip_number",
+        "dock",
+        "length_ft",
+        "width_ft",
+        "depth_ft",
+        "slip_type",
+        "has_electric",
+        "has_water",
+        "electric_amp",
+        "monthly_rate",
+        "daily_rate",
+        "location_x",
+        "location_y",
+        "notes"
+      ],
+      "updateFields": [
+        "slip_number",
+        "dock",
+        "length_ft",
+        "width_ft",
+        "depth_ft",
+        "slip_type",
+        "has_electric",
+        "has_water",
+        "electric_amp",
+        "status",
+        "monthly_rate",
+        "daily_rate",
+        "location_x",
+        "location_y",
+        "notes"
+      ],
+      "delete": true,
+      "source": "server/routes/slips.js"
+    },
+    {
+      "key": "work-orders",
+      "endpoint": "/api/work-orders",
+      "label": "Work orders",
+      "fields": [
+        "title",
+        "description",
+        "category",
+        "priority",
+        "location",
+        "assigned_to",
+        "reported_by",
+        "reported_date",
+        "due_date",
+        "completed_date",
+        "estimated_cost",
+        "actual_cost",
+        "notes"
+      ],
+      "updateFields": [
+        "title",
+        "description",
+        "category",
+        "priority",
+        "status",
+        "location",
+        "assigned_to",
+        "reported_by",
+        "reported_date",
+        "due_date",
+        "completed_date",
+        "estimated_cost",
+        "actual_cost",
+        "notes"
+      ],
+      "delete": true,
+      "source": "server/routes/workOrders.js"
+    }
+  ]
+}
