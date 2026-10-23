@@ -77,6 +77,7 @@ const aiRoutes = require('./routes/ai');
 // Route registrations
 app.use('/api/auth', authRoutes);
 app.use('/api/slips', authenticateToken, slipsRoutes);
+app.use('/api/fp-wave38c', require('./routes/fp-wave38c'));
 app.use('/api/tenants', authenticateToken, tenantsRoutes);
 app.use('/api/boats', authenticateToken, boatsRoutes);
 app.use('/api/utilities', authenticateToken, utilitiesRoutes);
